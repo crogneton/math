@@ -5,16 +5,16 @@
 <meta name='viewport' content='width=device-width,maximum-scale=1.0,initial-scale=1.0,user-scalable=no'/>
 <meta name='format-detection' content='telephone=no'/>
 <meta name='format-detection' content='address=no'>
-<title>Math Game</title>
+<title>Запонить таблицу умножения</title>
 
 <style>
-/* Сброс стилей браузера по умолчанию - убрать отступы */
+	/* Сброс стилей браузера по умолчанию - убрать отступы */
 	* {
 		margin: 0;
 		padding: 0;
 		box-sizing: border-box;
 	}
-	
+
   html, body {
     height: 100%;
     margin: 0;
@@ -70,7 +70,7 @@
   }
 
   #footer {
-    height: 150px;
+    height: 200px; /* Увеличиваем высоту для размещения чисел над кнопками */
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -104,9 +104,21 @@
   }
 
   #counters span {
-    margin: 0 2px;
-	font-size: 14px;
-    color: #434B4D;
+    margin: 0 10px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px;
+  }
+
+  .button-number {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #000;
   }
 </style>
 </head>
@@ -118,14 +130,23 @@
       <div id="problem">Нажмите кнопку для начала</div>
     </div>
     <div id='footer'>
-      <div>
-        <button class='button' id='btn1'>?</button>
-        <button class='button' id='btn2'>?</button>
-        <button class='button' id='btn3'>?</button>
+      <div style="display: flex;">
+        <div class="button-container">
+          <div class="button-number" id="btn1-number">?</div>
+          <button class='button' id='btn1'>?</button>
+        </div>
+        <div class="button-container">
+          <div class="button-number" id="btn2-number">?</div>
+          <button class='button' id='btn2'>?</button>
+        </div>
+        <div class="button-container">
+          <div class="button-number" id="btn3-number">?</div>
+          <button class='button' id='btn3'>?</button>
+        </div>
       </div>
       <div id="counters">
-        <span>Правильно:<span id="correctCount">0</span></span>
-        <span>Неправильно:<span id="incorrectCount">0</span></span>
+        <span>Правильно: <span id="correctCount">0</span></span>
+        <span>Неправильно: <span id="incorrectCount">0</span></span>
       </div>
     </div>
   </div>
@@ -177,10 +198,13 @@
       // Перемешиваем ответы
       answers.sort(() => Math.random() - 0.5);
 
-      // Назначаем ответы кнопкам
+      // Назначаем ответы кнопкам и числам над кнопками
       document.getElementById('btn1').textContent = answers[0];
+      document.getElementById('btn1-number').textContent = answers[0];
       document.getElementById('btn2').textContent = answers[1];
+      document.getElementById('btn2-number').textContent = answers[1];
       document.getElementById('btn3').textContent = answers[2];
+      document.getElementById('btn3-number').textContent = answers[2];
 
       // Убираем класс incorrect со всех кнопок и очищаем сообщение
       document.querySelectorAll('.button').forEach(button => {
