@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name='viewport' content='width=device-width,maximum-scale=1.0,initial-scale=1.0,user-scalable=no'/>
+<meta name='format-detection' content='telephone=no'/>
+<meta name='format-detection' content='address=no'>
+<title>Math Game</title>
+
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #fff;
+    font-family: 'Russo One', sans-serif;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #main {
+    flex: 1;
+    width: 100%;
+    max-width: 360px;
+    background: #FFFF9C;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  #help {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    padding: 10px;
+  }
+
+  #content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  #message {
+    color: red;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  #footer {
+    height: 150px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+  }
+
+  .button {
+    padding: 20px 40px;
+    background: #555;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+  }
+
+  .button:hover {
+    background: #777;
+  }
+
+  .button.incorrect {
+    background: red;
+  }
+
+  #counters {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #000;
+  }
+
+  #counters span {
+    margin: 0 2px;
+	font-size: 14px;
+    color: #434B4D;
+  }
+</style>
+</head>
+<body>
+  <div id='main'>
+    <div id="help"><strong>Главное — не считать в уме.</strong> <br> Смысл заключается в многократном повторении. Выбирайте ответы, не задумываясь. Со временем правильные ответы начнут всплывать в голове автоматически, на машинальном уровне. Это поможет запомнить таблицу умножения навсегда.</div>
+    <div id='content'>
+      <div id="message"></div>
+      <div id="problem">Нажмите кнопку для начала</div>
+    </div>
+    <div id='footer'>
+      <div>
+        <button class='button' id='btn1'>?</button>
+        <button class='button' id='btn2'>?</button>
+        <button class='button' id='btn3'>?</button>
+      </div>
+      <div id="counters">
+        <span>Правильно:<span id="correctCount">0</span></span>
+        <span>Неправильно:<span id="incorrectCount">0</span></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let correctAnswer;
+    let correctCount = 0;
+    let incorrectCount = 0;
+
+    // Звуковые эффекты с предзагрузкой
+    const correctSound = new Audio('zvonkiy-korotkiy-zvuk-uvedomleniya.mp3');
+    const incorrectSound = new Audio('opoveschenie-ob-oshibke.mp3');
+
+    // Предзагрузка звуков
+    correctSound.preload = 'auto';
+    incorrectSound.preload = 'auto';
+    correctSound.load();
+    incorrectSound.load();
+
+    // Функция для воспроизведения звука
+    function playSound(sound) {
+      sound.currentTime = 0; // Сбрасываем время звука
+      sound.play(); // Воспроизводим звук
+    }
+
+    // Функция для генерации случайного числа от 2 до 9
+    function getRandomNumber() {
+      return Math.floor(Math.random() * 8) + 2;
+    }
+
+    // Функция для генерации примера и ответов
+    function generateProblem() {
+      const num1 = getRandomNumber();
+      const num2 = getRandomNumber();
+      correctAnswer = num1 * num2;
+
+      // Выводим пример в блок #problem
+      document.getElementById('problem').textContent = `${num1} * ${num2} = ?`;
+
+      // Генерация случайных ответов
+      const answers = [correctAnswer];
+      while (answers.length < 3) {
+        const randomAnswer = getRandomNumber() * getRandomNumber();
+        if (!answers.includes(randomAnswer)) {
+          answers.push(randomAnswer);
+        }
+      }
+
+      // Перемешиваем ответы
+      answers.sort(() => Math.random() - 0.5);
+
+      // Назначаем ответы кнопкам
+      document.getElementById('btn1').textContent = answers[0];
+      document.getElementById('btn2').textContent = answers[1];
+      document.getElementById('btn3').textContent = answers[2];
+
+      // Убираем класс incorrect со всех кнопок и очищаем сообщение
+      document.querySelectorAll('.button').forEach(button => {
+        button.classList.remove('incorrect');
+      });
+      document.getElementById('message').textContent = '';
+    }
+
+    // Функция для обработки кликов по кнопкам
+    function handleButtonClick(event) {
+      const selectedAnswer = parseInt(event.target.textContent);
+
+      if (selectedAnswer === correctAnswer) {
+        // Если ответ правильный, генерируем новый пример
+        playSound(correctSound); // Проигрываем звук правильного ответа
+        correctCount++; // Увеличиваем счётчик правильных ответов
+        document.getElementById('correctCount').textContent = correctCount;
+        generateProblem();
+      } else {
+        // Если ответ неправильный, делаем кнопку красной и выводим сообщение
+        event.target.classList.add('incorrect');
+        document.getElementById('message').textContent = `Не правильно!`;
+        playSound(incorrectSound); // Проигрываем звук неправильного ответа
+        incorrectCount++; // Увеличиваем счётчик неправильных ответов
+        document.getElementById('incorrectCount').textContent = incorrectCount;
+      }
+    }
+
+    // Назначаем обработчики кликов на кнопки
+    document.getElementById('btn1').addEventListener('click', handleButtonClick);
+    document.getElementById('btn2').addEventListener('click', handleButtonClick);
+    document.getElementById('btn3').addEventListener('click', handleButtonClick);
+
+    // Генерация первого примера при загрузке страницы
+    generateProblem();
+  </script>
+</body>
+</html>
